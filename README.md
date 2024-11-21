@@ -1,16 +1,14 @@
-# verifier
+# Wedding QR Verifier App
 
 A new Flutter project.
 
-## Getting Started
+## Overview
 
-This project is a starting point for a Flutter application.
+This Flutter mobile application is designed to help verify guest attendance at a wedding using QR code scanning. The app allows quick and easy guest check-in by scanning a unique QR code and displaying guest information.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Overview
+  - 🔍 QR Code Scanning
+  - 👥 Guest Information Display
+  - 📱 Support for Android and iOS
+  - 🔒 Camera Permission Handling
+  - 📊 Simple and Intuitive UI

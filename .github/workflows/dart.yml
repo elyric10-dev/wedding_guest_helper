@@ -15,10 +15,16 @@ jobs:
           channel: 'stable'
           architecture: x64
       
-      - name: Set minimum iOS version
+      - name: Set up Podfile configuration
         run: |
           cd ios
-          echo "IPHONEOS_DEPLOYMENT_TARGET = 15.5" >> Podfile
+          echo "workspace 'Runner.xcworkspace'" > Podfile
+          echo "platform :ios, '15.5'" >> Podfile
+          echo "use_frameworks!" >> Podfile
+          echo "target 'Runner' do" >> Podfile
+          echo "  use_frameworks!" >> Podfile
+          echo "  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))" >> Podfile
+          echo "end" >> Podfile
           
       - run: flutter pub get
       

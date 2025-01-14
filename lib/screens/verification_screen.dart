@@ -1,7 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:verifier/main.dart';
+import 'dart:convert';
 import 'package:verifier/screens/scanner_screen.dart';
 
-// Guest model to represent each guest object
+class Guest {
+  final int id;
+  final int invitationId;
+  final int partyMemberId;
+  final String name;
+  final String middle;
+  final String lastname;
+  final bool isAttending;
+
+  Guest({
+    required this.id,
+    required this.invitationId,
+    required this.partyMemberId,
+    required this.name,
+    required this.middle,
+    required this.lastname,
+    required this.isAttending,
+  });
+
+  // Factory constructor to create a Guest from JSON
+  factory Guest.fromJson(Map<String, dynamic> json) {
+    return Guest(
+      id: json['id'],
+      invitationId: json['invitation_id'],
+      partyMemberId: json['party_member_id'],
+      name: json['name'],
+      middle: json['middle'],
+      lastname: json['lastname'],
+      isAttending: json['is_attending'],
+    );
+  }
+}
 
 
 late final String tableNumber;
@@ -10,14 +44,6 @@ const Color lilac = Color(0xFFB57EDC);
 const Color darkLilac = Color(0xFF8B72BE);
 const Color softLilac = Color(0xFFCAB9D9);
 const Color champagne = Color(0XFFF5E7D1);
-
-class Guest {
-  final String id;
-  final String name;
-  final String lastname;
-
-  Guest({required this.id, required this.name, required this.lastname});
-}
 
 class VerificationScreen extends StatefulWidget {
   final String scannedData;
@@ -35,30 +61,35 @@ class _VerificationScreenState extends State<VerificationScreen>
   late Animation<double> _slideAnimation;
   bool showList = false;
   bool isValidGuest = false;
-  Guest? foundGuest;
+  List<Guest> validGuests = [];
+  String tableNumber = '';
+  bool isLoading = true;
+  String errorMessage = '';
+  // Guest? foundGuest;
 
   //example this is the return of the API
-  final List<Guest> validGuests = [
-    Guest(id: '10001', name: 'Rhine Heart', lastname: 'Garcia'),
-    Guest(id: '10002', name: 'Melody', lastname: 'Dupal'),
-    Guest(id: '10003', name: 'Emily', lastname: 'Davis'),
-    Guest(id: '10004', name: 'Emma', lastname: 'Wilson'),
-    Guest(id: '10005', name: 'Sophia', lastname: 'Anderson'),
-  ];
-
-  String tableNumber = '10'; // replace on integration
+  // final List<Guest> validGuests = [
+  //   Guest(id: '10001', name: 'Rhine Heart', lastname: 'Garcia'),
+  //   Guest(id: '10002', name: 'Melody', lastname: 'Dupal'),
+  //   Guest(id: '10003', name: 'Emily', lastname: 'Davis'),
+  //   Guest(id: '10004', name: 'Emma', lastname: 'Wilson'),
+  //   Guest(id: '10005', name: 'Sophia', lastname: 'Anderson'),
+  // ];
+  // replace on integration
 
   @override
   void initState() {
     super.initState();
 
     // Verify the scanned QR code
-    // foundGuest = validGuests as Guest?;
 
-    isValidGuest = validGuests.isNotEmpty;
+    // Fetch guests when the screen initializes
+    _fetchGuestsByInvitationCode();
+
+    // isValidGuest = validGuests.isNotEmpty;
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1300),
       vsync: this,
     );
 
@@ -93,8 +124,61 @@ class _VerificationScreenState extends State<VerificationScreen>
     super.dispose();
   }
 
+  Future<void> _fetchGuestsByInvitationCode() async {
+    try {
+      final Map<String, dynamic> scannedQrData = json.decode(widget.scannedData);
+      final String invitationCode = scannedQrData['code'];
+
+      print("scannedQrData here ------------------------->");
+      print(scannedQrData);
+
+      final response = await http.get(
+        Uri.parse('https://api-rsvp.elyricm.cloud/api/invitation/$invitationCode'),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final invitationData = responseData['invitation'];
+
+        // Extract guests and table number
+        setState(() {
+          validGuests = (invitationData['guests'] as List)
+              .map((guestJson) => Guest.fromJson(guestJson))
+              .toList();
+
+          tableNumber = invitationData['seat_count'].toString();
+
+          isValidGuest = validGuests.isNotEmpty;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Failed to load invitation. Status code: ${response.statusCode}';
+          isLoading = false;
+          isValidGuest = false;
+        });
+        print("Error: $errorMessage");
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error connecting to the server';
+        isLoading = false;
+        isValidGuest = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: lilac),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -110,8 +194,8 @@ class _VerificationScreenState extends State<VerificationScreen>
                   child: Transform.scale(
                     scale: _checkAnimation.value,
                     child: Icon(
-                      isValidGuest ? Icons.check_circle : Icons.cancel,
-                      color: isValidGuest ? Colors.green : Colors.red,
+                      isValidGuest ? Icons.check_circle : null,
+                      color: isValidGuest ? darkLilac : Colors.red,
                       size: 150,
                     ),
                   ),
@@ -130,12 +214,11 @@ class _VerificationScreenState extends State<VerificationScreen>
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Container(
-                        height: 150,
                         width: double.infinity,
                         color: Colors.white,
                         child: const Center(
                           child: Padding(
-                            padding: EdgeInsets.only(top: 60),
+                            padding: EdgeInsets.symmetric(vertical: 32),
                             child: Text(
                               'Elyric ♥ Sandy',
                               style: TextStyle(
@@ -162,7 +245,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                 const Text(
+                                const Text(
                                   'Table No: ',
                                   style: TextStyle(
                                     fontSize: 24,
@@ -199,12 +282,11 @@ class _VerificationScreenState extends State<VerificationScreen>
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Container(
-                        height: 100,
                         width: double.infinity,
                         color: Colors.white,
                         child: const Center(
                           child: Padding(
-                            padding: EdgeInsets.zero,
+                            padding: EdgeInsets.symmetric(vertical: 16),
                             child: Text(
                               'Welcome have a seat!',
                               style: TextStyle(
@@ -282,7 +364,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => const ScannerScreen()),
+                              MaterialPageRoute(builder: (context) => const SeatFinderScreen()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -326,7 +408,7 @@ class _VerificationScreenState extends State<VerificationScreen>
             ),
 
           // Invalid Guest Screen
-          if (showList && !isValidGuest)
+          if (!isValidGuest)
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -28,9 +28,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('E&S QR Verifier'),
-      ),
       body: MobileScanner(
         controller: controller,
         onDetect: (capture) {

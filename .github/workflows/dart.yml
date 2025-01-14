@@ -22,6 +22,11 @@ jobs:
 
       
       - run: flutter pub get
+
+
+      - name: Install pods
+        run: pod install
+        working-directory: ios
       
 
       - run: pod repo update

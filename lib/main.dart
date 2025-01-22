@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:verifier/screens/scanner_screen.dart';
 import 'dart:math';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() {
   runApp(const VerifierApp());
 }
-
-// Future<void> main() async {
-//   await dotenv.load(fileName: ".env"); // Load the .env file
-//   runApp(const VerifierApp());
-// }
 
 class VerifierApp extends StatelessWidget {
   const VerifierApp({super.key});

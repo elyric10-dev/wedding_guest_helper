@@ -31,7 +31,7 @@ class _VerificationScreenState extends State<VerificationScreen>
     _fetchGuestsByInvitationCode();
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 2700),
       vsync: this,
     );
 

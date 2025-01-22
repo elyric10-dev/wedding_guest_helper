@@ -39,7 +39,7 @@ class SeatFinderScreen extends StatelessWidget {
               // Heading
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
+                child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
@@ -82,7 +82,7 @@ class SeatFinderScreen extends StatelessWidget {
                   ),
                 ],
               ),
-               const SizedBox(height: 40),
+              const SizedBox(height: 40),
               // Instructions
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -134,8 +134,8 @@ class SeatFinderScreen extends StatelessWidget {
 
   Widget _buildInstructionColumn(IconData icon, String text) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
@@ -158,87 +158,4 @@ class SeatFinderScreen extends StatelessWidget {
       ],
     );
   }
-
-  Widget _buildInstructionRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: Icon(icon, size: 24),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 14,
-              height: 1.5,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-
-class CurvedTextPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final text = "SCAN TO FIND YOUR SEAT";
-    final radius = size.width / 2 - 20; // Adjust padding from the edge
-    final textStyle = TextStyle(
-      color: Colors.black,
-      fontSize: 24,
-      fontWeight: FontWeight.bold,
-    );
-
-    // Center of the canvas
-    final center = Offset(size.width / 2, size.height / 2);
-
-    // Path for the curved text
-    final path = Path()
-      ..addArc(
-        Rect.fromCircle(center: center, radius: radius),
-        -pi / 1.18, // Start angle (top-center of the circle)
-        pi, // Sweep angle (half-circle, counter-clockwise)
-      );
-
-    // Draw text along the path
-    final textPainter = TextPainter(
-      text: TextSpan(text: text, style: textStyle),
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    final metrics = path.computeMetrics().first;
-    final totalLength = metrics.length;
-
-    double offset = 0;
-    for (int i = 0; i < text.length; i++) {
-      final textSpan = TextSpan(text: text[i], style: textStyle);
-      textPainter.text = textSpan;
-      textPainter.layout();
-
-      final textLength = textPainter.width;
-
-      // Position for the character
-      final tangent = metrics.getTangentForOffset(offset + textLength / 2)!;
-      canvas.save();
-      canvas.translate(tangent.position.dx, tangent.position.dy);
-      canvas.rotate(tangent.angle + pi); // Rotate 180° to fix reversed text
-      textPainter.paint(
-          canvas, Offset(-textLength / 2, -textPainter.height / 2));
-      canvas.restore();
-
-      offset += textLength;
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

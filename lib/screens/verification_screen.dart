@@ -4,47 +4,6 @@ import 'package:verifier/main.dart';
 import 'dart:convert';
 import 'package:verifier/screens/scanner_screen.dart';
 
-class Guest {
-  final int id;
-  final int invitationId;
-  final int partyMemberId;
-  final String name;
-  final String middle;
-  final String lastname;
-  final bool isAttending;
-
-  Guest({
-    required this.id,
-    required this.invitationId,
-    required this.partyMemberId,
-    required this.name,
-    required this.middle,
-    required this.lastname,
-    required this.isAttending,
-  });
-
-  // Factory constructor to create a Guest from JSON
-  factory Guest.fromJson(Map<String, dynamic> json) {
-    return Guest(
-      id: json['id'],
-      invitationId: json['invitation_id'],
-      partyMemberId: json['party_member_id'],
-      name: json['name'],
-      middle: json['middle'],
-      lastname: json['lastname'],
-      isAttending: json['is_attending'],
-    );
-  }
-}
-
-
-late final String tableNumber;
-const Color beige = Color(0xFFF5F5DD);
-const Color lilac = Color(0xFFB57EDC);
-const Color darkLilac = Color(0xFF8B72BE);
-const Color softLilac = Color(0xFFCAB9D9);
-const Color champagne = Color(0XFFF5E7D1);
-
 class VerificationScreen extends StatefulWidget {
   final String scannedData;
 
@@ -61,35 +20,18 @@ class _VerificationScreenState extends State<VerificationScreen>
   late Animation<double> _slideAnimation;
   bool showList = false;
   bool isValidGuest = false;
-  List<Guest> validGuests = [];
+  List<dynamic> validGuests = []; // Change to List<dynamic>
   String tableNumber = '';
   bool isLoading = true;
   String errorMessage = '';
-  // Guest? foundGuest;
-
-  //example this is the return of the API
-  // final List<Guest> validGuests = [
-  //   Guest(id: '10001', name: 'Rhine Heart', lastname: 'Garcia'),
-  //   Guest(id: '10002', name: 'Melody', lastname: 'Dupal'),
-  //   Guest(id: '10003', name: 'Emily', lastname: 'Davis'),
-  //   Guest(id: '10004', name: 'Emma', lastname: 'Wilson'),
-  //   Guest(id: '10005', name: 'Sophia', lastname: 'Anderson'),
-  // ];
-  // replace on integration
 
   @override
   void initState() {
     super.initState();
-
-    // Verify the scanned QR code
-
-    // Fetch guests when the screen initializes
     _fetchGuestsByInvitationCode();
 
-    // isValidGuest = validGuests.isNotEmpty;
-
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1300),
+      duration: const Duration(milliseconds: 2500),
       vsync: this,
     );
 
@@ -129,41 +71,44 @@ class _VerificationScreenState extends State<VerificationScreen>
       final Map<String, dynamic> scannedQrData = json.decode(widget.scannedData);
       final String invitationCode = scannedQrData['code'];
 
-      print("scannedQrData here ------------------------->");
-      print(scannedQrData);
-
       final response = await http.get(
         Uri.parse('https://api-rsvp.elyricm.cloud/api/invitation/$invitationCode'),
       );
+
+      print("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         final invitationData = responseData['invitation'];
 
-        // Extract guests and table number
-        setState(() {
-          validGuests = (invitationData['guests'] as List)
-              .map((guestJson) => Guest.fromJson(guestJson))
-              .toList();
+        // Check if 'guests' key exists and is a list
+        if (invitationData.containsKey('guests') && invitationData['guests'] is List) {
+          setState(() {
+            validGuests = invitationData['guests'];// Log raw guests data
 
-          tableNumber = invitationData['seat_count'].toString();
+            isValidGuest = validGuests.isNotEmpty;
 
-          isValidGuest = validGuests.isNotEmpty;
-          isLoading = false;
-        });
+            tableNumber = invitationData['seat_count'].toString();
+            isLoading = false;
+          });
+        } else {
+          print("No guests found in the response.");
+          setState(() {
+            isValidGuest = false;
+            isLoading = false;
+          });
+        }
       } else {
         setState(() {
           errorMessage = 'Failed to load invitation. Status code: ${response.statusCode}';
           isLoading = false;
-          isValidGuest = false;
         });
-        print("Error: $errorMessage");
       }
     } catch (e) {
+      print("Error: $e");
       setState(() {
         errorMessage = 'Error connecting to the server';
         isLoading = false;
-        isValidGuest = false;
       });
     }
   }
@@ -174,7 +119,7 @@ class _VerificationScreenState extends State<VerificationScreen>
     if (isLoading) {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(color: lilac),
+          child: CircularProgressIndicator(color: Colors.purple),
         ),
       );
     }
@@ -182,10 +127,7 @@ class _VerificationScreenState extends State<VerificationScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(color: Colors.white),
-
-          // Check/X Icon Animation
           if (!showList)
             AnimatedBuilder(
               animation: _checkAnimation,
@@ -195,22 +137,19 @@ class _VerificationScreenState extends State<VerificationScreen>
                     scale: _checkAnimation.value,
                     child: Icon(
                       isValidGuest ? Icons.check_circle : null,
-                      color: isValidGuest ? darkLilac : Colors.red,
+                      color: isValidGuest ? Colors.purple : Colors.red,
                       size: 150,
                     ),
                   ),
                 );
               },
             ),
-
-          // Content
           if (showList && isValidGuest)
             AnimatedBuilder(
               animation: _slideAnimation,
               builder: (context, child) {
                 return Column(
                   children: [
-                    // Top Half
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Container(
@@ -224,21 +163,19 @@ class _VerificationScreenState extends State<VerificationScreen>
                               style: TextStyle(
                                 fontSize: 48,
                                 fontWeight: FontWeight.bold,
-                                color: lilac,
+                                color: Colors.purple,
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-
-                    // Table Number
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Container(
                         height: 100,
                         width: double.infinity,
-                        color: lilac,
+                        color: Colors.purple,
                         child: Center(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 0),
@@ -250,14 +187,14 @@ class _VerificationScreenState extends State<VerificationScreen>
                                   style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
-                                    color: beige,
+                                    color: Colors.white,
                                   ),
                                 ),
                                 Container(
-                                  width: 80,  // Adjust as needed
-                                  height: 80, // Adjust as needed
+                                  width: 80,
+                                  height: 80,
                                   decoration: const BoxDecoration(
-                                    color: beige,
+                                    color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
                                   child: Center(
@@ -266,7 +203,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                                       style: const TextStyle(
                                         fontSize: 48,
                                         fontWeight: FontWeight.bold,
-                                        color: lilac, // beige color
+                                        color: Colors.purple,
                                       ),
                                     ),
                                   ),
@@ -277,8 +214,6 @@ class _VerificationScreenState extends State<VerificationScreen>
                         ),
                       ),
                     ),
-
-                    // Welcome Guests
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Container(
@@ -292,15 +227,13 @@ class _VerificationScreenState extends State<VerificationScreen>
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: darkLilac,
+                                color: Colors.purple,
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-
-                    // Guest List
                     Transform.translate(
                       offset: Offset(0, 100 * (1 - _slideAnimation.value)),
                       child: Container(
@@ -312,39 +245,26 @@ class _VerificationScreenState extends State<VerificationScreen>
                           itemBuilder: (context, index) {
                             final guest = validGuests[index];
                             return Card(
-                              color: beige,
+                              color: Colors.white,
                               elevation: 2,
                               margin: const EdgeInsets.symmetric(vertical: 4),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.white70,
-                                      softLilac
-                                    ],
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.purple,
+                                  child: Text(
+                                    '${guest['name'][0]}${guest['lastname'][0]}', // First letters of first and last name
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: darkLilac,
-                                    child: Text(
-                                      '${guest.name[0]}${guest.lastname[0]}', // First letters of first and last name
-                                      style: const TextStyle(
-                                        color: beige,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    '${guest.name} ${guest.lastname}', // Full name
-                                    style: const TextStyle(
-                                      color: darkLilac,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                title: Text(
+                                  '${guest['name']} ${guest['lastname']}', // Full name
+                                  style: const TextStyle(
+                                    color: Colors.purple,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -353,9 +273,6 @@ class _VerificationScreenState extends State<VerificationScreen>
                         ),
                       ),
                     ),
-
-                    // Total Tables and Scan New Code Button
-
                     Padding(
                       padding: const EdgeInsets.only(top: 60, left: 60, right: 60),
                       child: Transform.translate(
@@ -368,35 +285,17 @@ class _VerificationScreenState extends State<VerificationScreen>
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            backgroundColor: Colors.transparent,
+                            backgroundColor: Colors.purple,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Ink(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [
-                                  lilac,
-                                  softLilac
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Container(
-                              constraints: const BoxConstraints(minWidth: double.infinity, minHeight: 50),
-                              alignment: Alignment.center,
-                              child: const Text(
-                                'Okay',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          child: const Text(
+                            'Okay',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -406,9 +305,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                 );
               },
             ),
-
-          // Invalid Guest Screen
-          if (!isValidGuest)
+          if (!isValidGuest && !isLoading)
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -432,7 +329,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const ScannerScreen()),
+                        MaterialPageRoute(builder: (context) => const SeatFinderScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

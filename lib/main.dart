@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:verifier/screens/scanner_screen.dart';
 import 'dart:math';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() {
   runApp(const VerifierApp());
 }
+
+// Future<void> main() async {
+//   await dotenv.load(fileName: ".env"); // Load the .env file
+//   runApp(const VerifierApp());
+// }
 
 class VerifierApp extends StatelessWidget {
   const VerifierApp({super.key});
@@ -36,21 +42,27 @@ class SeatFinderScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              // Curved heading text
+              // Heading
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                // child: const Text(
-                //   'SCAN TO FIND YOUR SEAT',
-                //   style: TextStyle(
-                //     fontSize: 24,
-                //     fontWeight: FontWeight.bold,
-                //     letterSpacing: 1.5,
-                //   ),
-                //   textAlign: TextAlign.center,
-                // ),
-                child: CustomPaint(
-                  size: const Size(300, 300), // Adjust the size
-                  painter: CurvedTextPainter(),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Welcomes!',
+                      textAlign: TextAlign.center,
+                    ),
+                    // const SizedBox(height: 8),
+                    Text(
+                      'Please scan your QR Code',
+                      textAlign: TextAlign.center,
+                      // style: GoogleFonts.playfairDisplay(
+                      //   fontSize: 20,
+                      //   fontWeight: FontWeight.w400,
+                      //   color: Colors.black54,
+                      // ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 40),

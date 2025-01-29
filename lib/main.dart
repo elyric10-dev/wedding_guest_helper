@@ -134,11 +134,12 @@ class SeatFinderScreen extends StatelessWidget {
               //     ],
               //   ),
               // ),
+              const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: CarouselSlider(
                   options: CarouselOptions(
-                    height: 320, // Adjust height as needed
+                    height: 480, // Adjust height as needed
                     autoPlay: true, // Enables auto-sliding
                     autoPlayInterval: const Duration(seconds: 3), // Slide every 3 seconds
                     autoPlayAnimationDuration: const Duration(milliseconds: 800), // Smooth transition
@@ -164,7 +165,6 @@ class SeatFinderScreen extends StatelessWidget {
                   }),
                 ),
               ),
-              const Spacer(),
               // Footer
               // const Padding(
               //   padding: EdgeInsets.only(bottom: 30),

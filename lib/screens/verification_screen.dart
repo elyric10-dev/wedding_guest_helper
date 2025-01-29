@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:verifier/main.dart';
 import 'dart:convert';
-import 'package:verifier/screens/scanner_screen.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String scannedData;
@@ -75,7 +74,7 @@ class _VerificationScreenState extends State<VerificationScreen>
         Uri.parse('https://api-rsvp.elyricm.cloud/api/invitation/$invitationCode'),
       );
 
-      print("Response body: ${response.body}");
+      // print("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -92,7 +91,6 @@ class _VerificationScreenState extends State<VerificationScreen>
             isLoading = false;
           });
         } else {
-          print("No guests found in the response.");
           setState(() {
             isValidGuest = false;
             isLoading = false;
@@ -105,7 +103,6 @@ class _VerificationScreenState extends State<VerificationScreen>
         });
       }
     } catch (e) {
-      print("Error: $e");
       setState(() {
         errorMessage = 'Error connecting to the server';
         isLoading = false;

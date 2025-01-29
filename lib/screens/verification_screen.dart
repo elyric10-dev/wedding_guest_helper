@@ -155,13 +155,39 @@ class _VerificationScreenState extends State<VerificationScreen>
                       child: Container(
                         width: double.infinity,
                         color: Colors.white,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Image.asset(
+                                //   'assets/images/ES_logo.png',
+                                //   width: 200,
+                                // ),
+                                Image.asset(
+                                  'assets/images/ES_title.png',
+                                  width: 200,
+                                  // height: 200,
+                                ),
+                              ],
+                            )
+                          )
+                        )
+                      ),
+                    ),
+                    Transform.translate(
+                      offset: Offset(0, -100 * (1 - _slideAnimation.value)),
+                      child: Container(
+                        width: double.infinity,
+                        color: Colors.white,
                         child: const Center(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 32),
+                            padding: EdgeInsets.only(bottom: 16),
                             child: Text(
-                              'Elyric ♥ Sandy',
+                              'Welcome! have a seat at',
                               style: TextStyle(
-                                fontSize: 48,
+                                fontSize: 32,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.purple,
                               ),
@@ -215,29 +241,9 @@ class _VerificationScreenState extends State<VerificationScreen>
                       ),
                     ),
                     Transform.translate(
-                      offset: Offset(0, -100 * (1 - _slideAnimation.value)),
-                      child: Container(
-                        width: double.infinity,
-                        color: Colors.white,
-                        child: const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Text(
-                              'Welcome have a seat!',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.purple,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Transform.translate(
                       offset: Offset(0, 100 * (1 - _slideAnimation.value)),
                       child: Container(
-                        height: (MediaQuery.of(context).size.height - 150) / 2,
+                        height: (MediaQuery.of(context).size.height - 200) / 2,
                         color: Colors.transparent,
                         child: ListView.builder(
                           padding: const EdgeInsets.only(bottom: 16, right: 16, left: 16),

@@ -47,24 +47,24 @@ class SeatFinderScreen extends StatelessWidget {
                       'Welcome!',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.greatVibes(
-                        fontSize: 48,  // Adjust size for elegance
+                        fontSize: 72,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black87, // Softer black for a classy look
+                        color: Colors.black87,
                       ),
                     ),
                     Text(
                       'Please scan your QR Code',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.aboreto(
-                        fontSize: 24,
+                        fontSize: 32,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black54, // Lighter shade for subtlety
+                        color: Colors.black87,
                       ),
                     ),
                   ],
                 ),
               ),
-              // const SizedBox(height: 40),
+              const SizedBox(height: 32),
               // Circular QR Scanner
               Stack(
                 alignment: Alignment.center,
@@ -89,14 +89,15 @@ class SeatFinderScreen extends StatelessWidget {
                           child: ScannerScreen(),
                         ),
                       ),
+
                       // Border image
                       Container(
-                        width: 280, // Slightly larger than the scanner
+                        width: 280,
                         height: 280,
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/images/scanner_bg.png'), // Change to your background image
-                            fit: BoxFit.cover, // Ensures the image covers the circle
+                            image: AssetImage('assets/images/scanner_bg.png'),
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -104,42 +105,14 @@ class SeatFinderScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              // const SizedBox(height: 40),
-              // Instructions
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 30),
-              //   child: Row(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       Expanded(
-              //         child: _buildInstructionColumn(
-              //           Icons.phone_android,
-              //           'Prepare your gate pass QR code',
-              //         ),
-              //       ),
-              //       const SizedBox(width: 15),
-              //       Expanded(
-              //         child: _buildInstructionColumn(
-              //           Icons.qr_code_scanner,
-              //           'Place your QR code under the QR scanner',
-              //         ),
-              //       ),
-              //       const SizedBox(width: 15),
-              //       Expanded(
-              //         child: _buildInstructionColumn(
-              //           Icons.touch_app,
-              //           'Check table number and Tap Okay',
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
+
+              // Carousel Images
               const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: CarouselSlider(
                   options: CarouselOptions(
-                    height: 480, // Adjust height as needed
+                    height: 380,
                     autoPlay: true, // Enables auto-sliding
                     autoPlayInterval: const Duration(seconds: 3), // Slide every 3 seconds
                     autoPlayAnimationDuration: const Duration(milliseconds: 800), // Smooth transition
@@ -166,19 +139,7 @@ class SeatFinderScreen extends StatelessWidget {
                 ),
               ),
               // Footer
-              // const Padding(
-              //   padding: EdgeInsets.only(bottom: 30),
-              //   child: Text(
-              //     'ELYRIC & SANDY',
-              //     style: TextStyle(
-              //       fontSize: 28,
-              //       fontWeight: FontWeight.bold,
-              //       letterSpacing: 4,
-              //     ),
-              //   ),
-              // ),
-
-
+              const SizedBox(height: 28),
               Text(
                 'Elyric & Sandy',
                 textAlign: TextAlign.center,
@@ -188,37 +149,11 @@ class SeatFinderScreen extends StatelessWidget {
                   color: Colors.black87, // Softer black for a classy look
                 ),
               ),
+              const SizedBox(height: 12),
             ],
           ),
         ),
       ),
     );
   }
-
-  // Widget _buildInstructionColumn(IconData icon, String text) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     mainAxisAlignment: MainAxisAlignment.start,
-  //     children: [
-  //       Container(
-  //         padding: const EdgeInsets.all(8),
-  //         decoration: BoxDecoration(
-  //           color: Colors.white,
-  //           borderRadius: BorderRadius.circular(8),
-  //           border: Border.all(color: Colors.grey.shade300),
-  //         ),
-  //         child: Icon(icon, size: 24),
-  //       ),
-  //       const SizedBox(height: 10),
-  //       Text(
-  //         text,
-  //         style: const TextStyle(
-  //           fontSize: 14,
-  //           height: 1.5,
-  //         ),
-  //         textAlign: TextAlign.center,
-  //       ),
-  //     ],
-  //   );
-  // }
 }

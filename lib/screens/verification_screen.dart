@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:verifier/main.dart';
 import 'dart:convert';
@@ -22,6 +23,7 @@ class _VerificationScreenState extends State<VerificationScreen>
   List<dynamic> validGuests = []; // Change to List<dynamic>
   String tableNumber = '';
   bool isLoading = true;
+  bool isNetworkError = false;
   String errorMessage = '';
 
   @override
@@ -94,15 +96,18 @@ class _VerificationScreenState extends State<VerificationScreen>
           setState(() {
             isValidGuest = false;
             isLoading = false;
+            isNetworkError = false;
           });
         }
       } else {
         setState(() {
           errorMessage = 'Failed to load invitation. Status code: ${response.statusCode}';
           isLoading = false;
+          isNetworkError = false;
         });
       }
     } catch (e) {
+      isNetworkError = true;
       setState(() {
         errorMessage = 'Error connecting to the server';
         isLoading = false;
@@ -163,7 +168,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                                 //   width: 200,
                                 // ),
                                 Image.asset(
-                                  'assets/images/ES_title.png',
+                                  'assets/images/ES_logo.png',
                                   width: 200,
                                   // height: 200,
                                 ),
@@ -175,20 +180,15 @@ class _VerificationScreenState extends State<VerificationScreen>
                     ),
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
-                      child: Container(
-                        width: double.infinity,
-                        color: Colors.white,
-                        child: const Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 16),
-                            child: Text(
-                              'Welcome! have a seat at',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.purple,
-                              ),
-                            ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          'Welcome!',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.greatVibes(
+                            fontSize: 72,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black87,
                           ),
                         ),
                       ),
@@ -308,6 +308,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                 );
               },
             ),
+
           if (!isValidGuest && !isLoading)
             Center(
               child: Column(
@@ -319,9 +320,8 @@ class _VerificationScreenState extends State<VerificationScreen>
                     size: 100,
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Invalid QR Code',
-                    style: TextStyle(
+                   Text(isNetworkError ? 'Check your Network or Server Connection.': 'Invalid QR Code',
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.red,

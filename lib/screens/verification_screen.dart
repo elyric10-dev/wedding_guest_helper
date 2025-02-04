@@ -72,8 +72,8 @@ class _VerificationScreenState extends State<VerificationScreen>
       final Map<String, dynamic> scannedQrData = json.decode(widget.scannedData);
       final String invitationCode = scannedQrData['code'];
 
-      final response = await http.get(
-        Uri.parse('https://api-rsvp.elyricm.cloud/api/invitation/$invitationCode'),
+      final response = await http.post(
+        Uri.parse('https://api-rsvp.elyricm.cloud/api/scan-qr/$invitationCode'),
       );
 
       // print("Response body: ${response.body}");
@@ -82,10 +82,9 @@ class _VerificationScreenState extends State<VerificationScreen>
         final Map<String, dynamic> responseData = json.decode(response.body);
         final invitationData = responseData['invitation'];
 
-        // Check if 'guests' key exists and is a list
-        if (invitationData.containsKey('guests') && invitationData['guests'] is List) {
+        if (responseData['arrived_guests'] is List) {
           setState(() {
-            validGuests = invitationData['guests'];// Log raw guests data
+            validGuests = responseData['arrived_guests'];
 
             isValidGuest = validGuests.isNotEmpty;
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:verifier/components/flying_particles.dart';
 import 'package:verifier/screens/scanner_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';

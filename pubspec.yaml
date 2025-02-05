@@ -58,6 +58,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/images/qr_list_border.png
     - assets/images/ES_logo.png
     - assets/images/ES_title.png
     - assets/images/scanner_bg.png

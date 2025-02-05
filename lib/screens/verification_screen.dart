@@ -80,7 +80,7 @@ class _VerificationScreenState extends State<VerificationScreen>
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final invitationData = responseData['invitation'];
+        // final invitationData = responseData['invitation'];
 
         if (responseData['arrived_guests'] is List) {
           setState(() {
@@ -88,7 +88,11 @@ class _VerificationScreenState extends State<VerificationScreen>
 
             isValidGuest = validGuests.isNotEmpty;
 
-            tableNumber = invitationData['seat_count'].toString();
+            tableNumber = responseData['arrived_guests'] != null &&
+                responseData['arrived_guests'].isNotEmpty &&
+                responseData['arrived_guests'][0]['table_id'] != null
+                ? responseData['arrived_guests'][0]['table_id'].toString()
+                : '0';
             isLoading = false;
           });
         } else {
@@ -153,85 +157,98 @@ class _VerificationScreenState extends State<VerificationScreen>
                   children: [
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
-                      child: Container(
-                        width: double.infinity,
-                        color: Colors.white,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Image.asset(
-                                //   'assets/images/ES_logo.png',
-                                //   width: 200,
-                                // ),
-                                Image.asset(
-                                  'assets/images/ES_logo.png',
-                                  width: 200,
-                                  // height: 200,
-                                ),
-                              ],
-                            )
-                          )
-                        )
+                      child: Text(
+                        'Welcome!',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.greatVibes(
+                          fontSize: 72,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          'Welcome!',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.greatVibes(
-                            fontSize: 72,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black87,
-                          ),
-                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'Thank you for coming,',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.aboreto(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              'please be seated at',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.aboreto(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        )
                       ),
                     ),
+
                     Transform.translate(
                       offset: Offset(0, -100 * (1 - _slideAnimation.value)),
                       child: Container(
-                        height: 100,
+                        height: 200,
                         width: double.infinity,
-                        color: Colors.purple,
+                        color: const Color(0xFFC8A2C8),
                         child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  'Table No: ',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text(
+                                'Table no.',
+                                textAlign: TextAlign.right,
+                                style: GoogleFonts.aboreto(
+                                  fontSize: 42,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
                                 ),
-                                Container(
-                                  width: 80,
-                                  height: 80,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
+                              ),
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Container(
+                                    width: 170,
+                                    height: 170,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
-                                  child: Center(
+                                  Center(
                                     child: Text(
                                       tableNumber,
-                                      style: const TextStyle(
-                                        fontSize: 48,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.purple,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.aboreto(
+                                        fontSize: 100,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.purple[300],
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
+                                  Container(
+                                    width: 320,
+                                    height: 320,
+                                    decoration: const BoxDecoration(
+                                      image: DecorationImage(
+                                        image: AssetImage('assets/images/scanner_bg.png'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -239,34 +256,53 @@ class _VerificationScreenState extends State<VerificationScreen>
                     Transform.translate(
                       offset: Offset(0, 100 * (1 - _slideAnimation.value)),
                       child: Container(
-                        height: (MediaQuery.of(context).size.height - 200) / 2,
+                        height: (MediaQuery.of(context).size.height - 200) / 2.4,
                         color: Colors.transparent,
                         child: ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 16, right: 16, left: 16),
+                          padding: const EdgeInsets.only(bottom: 0, right: 16, left: 16),
                           itemCount: validGuests.length,
                           itemBuilder: (context, index) {
                             final guest = validGuests[index];
-                            return Card(
-                              color: Colors.white,
-                              elevation: 2,
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.purple,
-                                  child: Text(
-                                    '${guest['name'][0]}${guest['lastname'][0]}', // First letters of first and last name
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 0.0),
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 2,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage('assets/images/qr_list_border.png'),
+                                      fit: BoxFit.fitHeight,
+                                      alignment: Alignment.centerLeft,
+                                      opacity: 0.8,
                                     ),
                                   ),
-                                ),
-                                title: Text(
-                                  '${guest['name']} ${guest['lastname']}', // Full name
-                                  style: const TextStyle(
-                                    color: Colors.purple,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w500,
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 42,
+                                      backgroundColor: Colors.purple[300],
+                                      child: Text(
+                                        '${guest['name'][0]}${guest['lastname'][0]}',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.aboreto(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    title: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      child: Text(
+                                        '${guest['name']} ${guest['lastname']}',
+                                        textAlign: TextAlign.start,
+                                        style: GoogleFonts.aboreto(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.purple[300],
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -287,22 +323,39 @@ class _VerificationScreenState extends State<VerificationScreen>
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple,
+                            backgroundColor: const Color(0xFFC8A2C8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text(
-                            'Okay',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24),
+                            child: Text(
+                              'Okay',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.aboreto(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
+
+                    // Footer
+                    const SizedBox(height: 28),
+                    Text(
+                      'Elyric & Sandy',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.greatVibes(
+                        fontSize: 56,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 );
               },
@@ -353,6 +406,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                 ],
               ),
             ),
+
         ],
       ),
     );

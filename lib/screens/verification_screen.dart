@@ -132,7 +132,9 @@ class _VerificationScreenState extends State<VerificationScreen>
     return Scaffold(
       body: Stack(
         children: [
-          Container(color: Colors.white),
+          Container(
+              color: const Color(0xFFF5E6DA),
+          ),
           if (!showList)
             AnimatedBuilder(
               animation: _checkAnimation,
@@ -222,7 +224,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                                     width: 170,
                                     height: 170,
                                     decoration: const BoxDecoration(
-                                      color: Colors.white,
+                                      color: Color(0xFFF5E6DA),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -266,7 +268,7 @@ class _VerificationScreenState extends State<VerificationScreen>
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 0.0),
                               child: Card(
-                                color: Colors.white,
+                                color: const Color(0xFFFAFFDA),
                                 elevation: 2,
                                 child: Container(
                                   decoration: const BoxDecoration(
@@ -292,12 +294,12 @@ class _VerificationScreenState extends State<VerificationScreen>
                                       ),
                                     ),
                                     title: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      padding: const EdgeInsets.symmetric(vertical: 10.0),
                                       child: Text(
                                         '${guest['name']} ${guest['lastname']}',
                                         textAlign: TextAlign.start,
                                         style: GoogleFonts.aboreto(
-                                          fontSize: 28,
+                                          fontSize: 36,
                                           fontWeight: FontWeight.w900,
                                           color: Colors.purple[300],
                                         ),
